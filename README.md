@@ -30,16 +30,18 @@ content: 报警内容
 
 代码调用方式：
 ```java
-AlarmAPI alarmAPI = new EmailAlarmAPI()
+AlarmAPI alarmAPI = new EmailAlarmAPI();
+alarmAPI.send("emr-job-day", "这个一个客户端测试");
+//alarmAPI.send("emr-job-day", "这个一个客户端测试", 1);
 ```
 
 ---------
 
 ## Maven modules
 
-  * [tomato-monitor-commons](#tomato-monitor-commons)
-  * [tomato-monitor-alarm](#tomato-monitor-alarm)
-  * [tomato-monitor-client](#tomato-monitor-client)
+* [tomato-monitor-commons](#tomato-monitor-commons)
+* [tomato-monitor-alarm](#tomato-monitor-alarm)
+* [tomato-monitor-client](#tomato-monitor-client)
     
   
 ---
