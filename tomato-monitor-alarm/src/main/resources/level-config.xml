@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans>
+    <levelBean>
+        <level>1</level>
+        <interval>60</interval>
+        <explain>一级报警，最高级别，最高频率1分钟报警一次</explain>
+    </levelBean>
+    <levelBean>
+        <level>2</level>
+        <interval>600</interval>
+        <explain>二级报警，最高频率10分钟报警一次</explain>
+    </levelBean>
+    <levelBean>
+        <level>3</level>
+        <interval>3600</interval>
+        <explain>三级报警，最低级别，最高频率一小时报警一次</explain>
+    </levelBean>
+</beans>

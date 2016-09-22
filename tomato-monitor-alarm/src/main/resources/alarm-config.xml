@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans>
+    <alarmBean>
+        <serviceTag>emr-job-day</serviceTag><!--服务唯一标识-->
+        <serviceName>EMR作业服务</serviceName><!--服务描述，不能有逗号-->
+        <level>2</level>
+        <interval>60</interval><!--不配置的话，用level-config中的默认值-->
+        <email>
+            <recipients>wangrun@163.com</recipients>
+            <cc></cc>
+        </email>
+        <phone></phone>
+        <status>1</status><!--0:停用预警服务，1：启用预警服务，默认为启动-->
+        <intervalValid>true</intervalValid><!--频率控制开关，如果为false，interval将失效，true: 限制，false: 不限制, 默认为true-->
+    </alarmBean>
+</beans>
