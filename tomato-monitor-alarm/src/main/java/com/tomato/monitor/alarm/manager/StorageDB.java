@@ -4,6 +4,7 @@ import com.tomato.monitor.alarm.bean.AlarmBean;
 import com.tomato.monitor.alarm.bean.MessageBean;
 
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * 基于数据库的预警信息存储
@@ -18,17 +19,27 @@ public class StorageDB extends StorageManager {
     }
 
     @Override
-    public AlarmBean get(String tag) {
+    public AlarmBean get() {
         return null;
     }
 
     @Override
-    public Map<String, AlarmBean> getAll() {
+    public Queue<AlarmBean> getAll() {
         return null;
     }
 
     @Override
-    public void delete() {
+    public Map<String, AlarmBean> getAllInterval() {
+        return null;
+    }
 
+    @Override
+    public void deleteInterval() {
+
+    }
+
+    @Override
+    public AlarmBean delete() {
+        return null;
     }
 }

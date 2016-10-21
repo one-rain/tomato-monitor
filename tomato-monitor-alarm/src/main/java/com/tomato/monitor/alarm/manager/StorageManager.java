@@ -5,6 +5,7 @@ import com.tomato.monitor.alarm.bean.AlarmBean;
 import com.tomato.monitor.alarm.bean.MessageBean;
 
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * User: wangrun
@@ -20,20 +21,30 @@ public abstract class StorageManager {
     public abstract MessageBean add(AlarmBean alarmBean);
 
     /**
-     * 获取预警信息
-     * @param tag
+     * 获取头部预警信息
      * @return
      */
-    public abstract AlarmBean get(String tag);
+    public abstract AlarmBean get();
 
     /**
-     * 获取所有的预警信息
+     * 获取所有待发送的预警信息
      * @return
      */
-    public abstract Map<String, AlarmBean> getAll();
+    public abstract Queue<AlarmBean> getAll();
 
     /**
-     * 删除预警信息
+     * 获取所有在间隔期间内的预警
+     * @return
      */
-    public abstract void delete();
+    public abstract Map<String, AlarmBean> getAllInterval();
+
+    /**
+     * 删除间隔时间过期的预警信息
+     */
+    public abstract void deleteInterval();
+
+    /**
+     * 删除头部的预警信息
+     */
+    public abstract AlarmBean delete();
 }

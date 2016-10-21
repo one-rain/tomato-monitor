@@ -13,7 +13,7 @@ import com.tomato.monitor.alarm.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -51,61 +51,39 @@ public class AlarmSendWorker {
 
         public void run() {
             StorageManager storageManager = StorageFactory.getStorage("default");
-            Map<String, AlarmBean> map = storageManager.getAll();
-            if (map.size() > 0) {
-                LOG.info("start poll send...");
-                for (Map.Entry<String, AlarmBean> entry : map.entrySet()) {
-                    AlarmBean alarmBean = entry.getValue();
-                    if (!alarmBean.isSend()) {
-
-                        this.setReceive(alarmBean);
-
-                        if (alarmBean.isSend()) {
-                            LOG.info("success send alarm.");
-                            storageManager.getAll().put(alarmBean.getServiceTag(), alarmBean);
-                        }else {
-                            LOG.error("send alarm failed!");
-                            storageManager.getAll().remove(alarmBean.getServiceTag());
-                        }
+            LOG.info("start poll send...");
+            Queue<AlarmBean> queue = storageManager.getAll();
+            int size = queue.size();
+            size = (size > 1000) ? 1000 : size;
+            for (int index = 0; index < size; index++) {
+                AlarmBean alarmBean = storageManager.delete();
+                ReceiveEmail receiveEmail = alarmBean.getReceiveEmail();
+                if (receiveEmail != null) {
+                    AlarmService alarmService = new EmailServiceImpl();
+                    try {
+                        alarmService.send(alarmBean);
+                        receiveEmail.setSend(true);
+                        alarmBean.setReceiveEmail(receiveEmail);
+                    } catch (Exception e) {
+                        alarmBean.setSend(false);
+                        LOG.error("send email alarm error!, service tag: " + alarmBean.getServiceTag(), e);
                     }
                 }
-                LOG.info("end poll send...");
-            }
-        }
 
-        private void setReceive(AlarmBean alarmBean) {
-            boolean flagEmail = false, flagPhone = false;
-            ReceiveEmail receiveEmail = alarmBean.getReceiveEmail();
-            if (receiveEmail != null) {
-                AlarmService alarmService = new EmailServiceImpl();
-                try {
-                    alarmService.send(alarmBean);
-                    receiveEmail.setSend(true);
-                    alarmBean.setReceiveEmail(receiveEmail);
-                    flagEmail = true;
-                } catch (Exception e) {
-                    alarmBean.setSend(false);
-                    LOG.error("send email alarm error!, service tag: " + alarmBean.getServiceTag(), e);
+                ReceivePhone receivePhone = alarmBean.getReceivePhone();
+                if (receivePhone != null) {
+                    AlarmService alarmService = new PhoneServiceImpl();
+                    try {
+                        alarmService.send(alarmBean);
+                        receivePhone.setSend(true);
+                        alarmBean.setReceivePhone(receivePhone);
+                    } catch (Exception e) {
+                        alarmBean.setSend(false);
+                        LOG.error("send phone alarm error!, service tag: " + alarmBean.getServiceTag(), e);
+                    }
                 }
             }
-
-            ReceivePhone receivePhone = alarmBean.getReceivePhone();
-            if (receivePhone != null) {
-                AlarmService alarmService = new PhoneServiceImpl();
-                try {
-                    alarmService.send(alarmBean);
-                    receivePhone.setSend(true);
-                    alarmBean.setReceivePhone(receivePhone);
-                    flagPhone = true;
-                } catch (Exception e) {
-                    alarmBean.setSend(false);
-                    LOG.error("send phone alarm error!, service tag: " + alarmBean.getServiceTag(), e);
-                }
-            }
-
-            if (flagEmail || flagPhone) {
-                alarmBean.setSend(true);
-            }
+            LOG.info("end poll send...");
         }
     }
 
@@ -115,7 +93,7 @@ public class AlarmSendWorker {
         public void run() {
             LOG.info("start poll clean...");
             StorageManager storageManager = StorageFactory.getStorage("default");
-            storageManager.delete();
+            storageManager.deleteInterval();
             LOG.info("end poll clean...");
         }
     }
